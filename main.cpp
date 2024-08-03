@@ -31,10 +31,16 @@ public:
 			p.y >= y - h &&
 			p.y < y + h);
 	}
-	
-
+	bool intersects(REC range )//wer are testing if both the rectangle intersect
+	{
+		return(
+			range.x - range.w > x + w ||
+			range.y + range.y > y + h ||
+			range.x - range.w < x + w ||
+			range.x + range.w > x + w
+			);
+	}
 };
-
 
 
 class QuadTree {
@@ -105,6 +111,37 @@ public:
 		}
 
 	}
+
+	void query(REC range, std::vector<Point>&found)// here we pass a rectangle and see what all quad trees are intersecting with it
+	{
+		
+		if (!boundary.intersects(range)) { return ; }// see if that range intersects with other quadTree
+		
+		else {									// if the boundary intersects
+												//then we are insert  all the points 
+			for (auto P : pointsInQt)			// from the QT to this found array 
+			{	
+				if (range.contains(P)) { found.push_back(P); }
+			}
+			
+			if(isDivided)
+			{
+				 QTlist[0].query(range,found);
+				 QTlist[1].query(range,found);
+				 QTlist[2].query(range,found);
+				 QTlist[3].query(range,found);
+			
+
+
+				//QTlist[0].query(range);
+
+			}
+			
+
+		}
+	}
+
+
 	void DrawRec() 
 	{
 		DrawRectangleLines( boundary.x - boundary.w, boundary.y - boundary.h , boundary.w * 2, boundary.h * 2, WHITE);
@@ -155,3 +192,65 @@ public:
 
 };
 
+
+
+
+
+std::vector<Point> points;
+
+int main() {
+	const int screenW = 800, screenH = 800;
+	REC boundary{ screenW / 2,screenH / 2, screenW / 2,screenH / 2, };
+	QuadTree QT(boundary);
+
+	for (int i = 0; i < 300; i++)
+	{
+		Point p{ (int)std::rand() % screenW,(int)std::rand() % screenW };
+		points.push_back(p);
+		QT.insertPoint(p);
+		std::cout << "n:" << i << " " << points[i].x << "  :x  " << points[i].y << ":y\n";
+
+	}
+
+	//QT.PrintInfo(); for debugging purposes
+	
+	//std::cout << "total number of points inside:" << pointsInRange.size()<<"\n\n\n";
+	
+	InitWindow(screenW, screenH, "raylib [core] example - basic window");
+
+	SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
+	 while (!WindowShouldClose())    // Detect window close button or ESC key
+    {
+        // Update
+        //----------------------------------------------------------------------------------
+        // TODO: Update your variables here
+        //----------------------------------------------------------------------------------
+
+        // Draw
+        //----------------------------------------------------------------------------------
+        BeginDrawing();
+
+        ClearBackground(BLACK);
+		QT.DrawRec();
+		
+		std::vector<Point> pointsInRange;
+		REC range{ (float)GetMouseX(), (float)GetMouseY(), 111, 156 }; std::vector<Point>points;
+		QT.query(range, pointsInRange);
+		DrawRectangleLines(range.x-range.w, range.y-range.h, range.w*2, range.h*2, GREEN);
+		for(auto p: pointsInRange)
+		{
+			DrawCircle(p.x, p.y, 4, GREEN);
+		}
+        DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
+
+        EndDrawing();
+        //----------------------------------------------------------------------------------
+    }
+
+    // De-Initialization
+    //--------------------------------------------------------------------------------------
+    CloseWindow();        // C
+	
+	
+	return 0;
+}
