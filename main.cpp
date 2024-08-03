@@ -105,4 +105,53 @@ public:
 		}
 
 	}
-}
+	void DrawRec() 
+	{
+		DrawRectangleLines( boundary.x - boundary.w, boundary.y - boundary.h , boundary.w * 2, boundary.h * 2, WHITE);
+		for(auto p:pointsInQt)
+		{
+			DrawCircle(p.x, p.y, 4, RED);
+		}
+		if (isDivided) 
+		{
+			QTlist[0].DrawRec();//0->north West
+			QTlist[1].DrawRec();//1->north East
+			QTlist[2].DrawRec();//2->south West
+			QTlist[3].DrawRec();//3->south East
+
+		}
+
+		
+	}
+	void PrintInfo()
+	{
+		
+		std::cout <<"x: " << boundary.x << "  ";
+		std::cout <<"y: " << boundary.y << "  ";
+		std::cout <<"w: " << boundary.w << "  ";
+		std::cout <<"h: " << boundary.h << "  ";
+		std::cout << "isdivded: " << isDivided << " \n"; int i = 0;
+		std::cout << "point inside the QT\n\n";
+		for(auto p :pointsInQt)
+		{
+			std::cout << "n:" << ++i << " " << p.x << "  :x  " << p.y << ":y\n";
+		}
+		if(isDivided)
+		{
+			std::cout << "\n***************north West**********\n";
+			QTlist[0].PrintInfo();//0->north West
+			std::cout << "\n***************north EAST**********\n";
+			QTlist[1].PrintInfo();//1->north East
+			std::cout << "\n***************south West**********\n";
+			QTlist[2].PrintInfo();//2->south West
+			std::cout << "\n***************South East**********\n";
+			QTlist[3].PrintInfo();//3->south East
+			std::cout << "\n\n\n";
+		}
+
+	
+
+	}
+
+};
+
